@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chat_app/components/custom_text_field.dart';
 import 'package:chat_app/services/chat/chat_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,7 +24,7 @@ class _ChatPageState extends State<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
   final ChatService _chatService = ChatService();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-
+  final ScrollController _scrollController = ScrollController();
   void sendMessage() async {
     if (_messageController.text.isNotEmpty) {
       await _chatService.sendMessage(
@@ -35,27 +37,36 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              _scrollDown();
+            },
+            icon: Icon(Icons.arrow_downward),
+          ),
+        ],
         backgroundColor: Colors.grey[800],
         title: Text(widget.recieverUserEmail),
       ),
       body: Stack(
         fit: StackFit.expand,
+        clipBehavior: Clip.none,
         children: [
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage("assets/bg_img_2.png"),
-                  repeat: ImageRepeat.repeatY,
-                  colorFilter:
-                      ColorFilter.mode(Colors.grey, BlendMode.difference)),
-            ),
+          Image.asset(
+            "assets/whastsappBg.jpg",
+            colorBlendMode: BlendMode.color,
+            color: Colors.grey,
+            fit: BoxFit.fitWidth,
+            repeat: ImageRepeat.repeatY,
           ),
           Column(
+            verticalDirection: VerticalDirection.down,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Expanded(
-                child: _buildMessageList(),
+                child: Container(child: _buildMessageList()),
               ),
-              _buildMessageInput(),
+              _buildMessageInput()
             ],
           ),
         ],
@@ -78,11 +89,22 @@ class _ChatPageState extends State<ChatPage> {
         }
 
         return ListView(
+          reverse: false,
+          itemExtent: snapshot.data!.docs.length.toDouble(),
+          controller: _scrollController,
           children: snapshot.data!.docs
               .map((document) => _buildMessageItem(document))
               .toList(),
         );
       },
+    );
+  }
+
+  void _scrollDown() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOut,
     );
   }
 
@@ -130,12 +152,22 @@ class _ChatPageState extends State<ChatPage> {
         children: [
           Expanded(
             child: CustomTextField(
+              onTap: () {
+                Timer(Duration(milliseconds: 250), () {
+                  _scrollDown();
+                });
+              },
               controller: _messageController,
               hintText: "Enter message",
             ),
           ),
           IconButton(
-            onPressed: sendMessage,
+            onPressed: () {
+              sendMessage();
+              Timer(Duration(milliseconds: 250), () {
+                _scrollDown();
+              });
+            },
             icon: Icon(
               Icons.send,
               size: 40,

@@ -24,7 +24,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SafeArea(child: AuthGate()),
+      home: SafeArea(
+        child: AuthGate(),
+        maintainBottomViewPadding: true,
+      ),
     );
   }
 }

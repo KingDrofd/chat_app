@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           focusColor: Colors.grey[400],
           title: Text(
-            data['email'],
+            data['name'],
             style: TextStyle(),
           ),
           onTap: () {
@@ -76,7 +76,7 @@ class _HomePageState extends State<HomePage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => ChatPage(
-                        recieverUserEmail: data['email'],
+                        recieverUserEmail: data['name'],
                         recieverUserId: data['uid'])));
           },
         ),

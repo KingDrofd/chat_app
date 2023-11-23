@@ -16,6 +16,7 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
 
   void signUp() async {
     if (passwordController.text != passwordController.text) {
@@ -30,7 +31,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     try {
       await authService.signUpWithEmailAndPassword(
-          emailController.text, passwordController.text);
+          emailController.text, passwordController.text, nameController.text);
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -65,10 +66,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   style: TextStyle(color: Colors.black45, fontSize: 18),
                 ),
                 const Gap(25),
-                CustomTextField(
-                    controller: emailController,
-                    obscureText: false,
-                    hintText: "Email"),
+                CustomTextField(controller: nameController, hintText: "Name"),
+                const Gap(10),
+                CustomTextField(controller: emailController, hintText: "Email"),
                 const Gap(10),
                 CustomTextField(
                     controller: passwordController,
